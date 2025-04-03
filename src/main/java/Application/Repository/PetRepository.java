@@ -2,7 +2,6 @@ package Application.Repository;
 
 import Application.Model.Pet;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -15,6 +14,7 @@ import java.util.List;
  * between, for example, using an actual PostgresSQL, Oracle, or MySQL database.
  */
 public interface PetRepository extends JpaRepository<Pet, Long> {
+    
     /**
      * This query is written in Spring Data's query language providing - JPQL, or Java Persistence Query Language.
      * You can notice here that the process of writing a query looks similar to a SQL statement, although the SELECT
@@ -36,6 +36,7 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
      * and/or, order by, group by, limit, as well as subqueries.
      *
      * @param name the name of the pet.
+     * @param species the species of the pet.
      * @return All pets with the name provided as the parameter.
      */
     @Query("FROM Pet WHERE name = :nameVar AND species = :speciesVar")
@@ -44,6 +45,8 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
     /**
      * If we include the SELECT statement, we can directly retrieve specific data from the table, which is in this
      * case useful for retrieving an aggregate value.
+     *
+     * @return the maximum age of all pets in the database.
      */
     @Query("SELECT MAX(age) FROM Pet")
     int example3();
@@ -52,25 +55,32 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
      * TODO: Retrieve all pets by their species.
      * Replace 'FROM Pet' with the necessary query and add Param annotations. 'FROM Pet' is present to allow the app
      * to initially compile.
-     * @param species
+     *
+     * @param species the species of the pet.
+     * @return List of pets belonging to the specified species.
      */
-    @Query("FROM Pet")
+    @Query("FROM Pet WHERE species = :species")
     List<Pet> lab1(@Param("species") String species);
 
     /**
      * TODO: Retrieve all pets by either their name OR their age.
      * Replace 'FROM Pet' with the necessary query and add Param annotations. 'FROM Pet' is present to allow the app
      * to initially compile.
+     *
+     * @param name the name of the pet.
+     * @param age the age of the pet.
+     * @return List of pets that match the given name or age.
      */
-    @Query("FROM Pet")
+    @Query("FROM Pet WHERE name = :name OR age = :age")
     List<Pet> lab2(@Param("name") String name, @Param("age") int age);
 
     /**
      * TODO: Retrieve the AVERAGE age of all pets.
      * Replace 'FROM Pet' with the necessary query and add Param annotations. 'FROM Pet' is present to allow the app
      * to initially compile.
+     *
+     * @return The average age of all pets.
      */
-    @Query("FROM Pet")
+    @Query("SELECT AVG(age) FROM Pet")
     double lab3();
-
 }
